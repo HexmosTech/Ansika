@@ -1,0 +1,111 @@
+---
+- name: Onboarding Tasks
+  hosts: localhost
+  become: yes
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Set up Lama 2
+      shell: "wget -qO- https://hexmos.com/lama2/install.sh | bash -s"
+    - name: software common properties
+      shell: |
+        sudo apt update
+        sudo apt install -y software-properties-common
+
+    - name: install python and pip3
+      block:
+        - name: add python-apt
+          shell: sudo apt install -y python3-apt
+        - name: configure deadsnake
+          shell: sudo add-apt-repository -y ppa:deadsnakes/ppa
+        - name: update apt cache and install
+          shell: |
+            sudo apt update 
+            sudo apt  install -y python3.10
+            sudo apt install -y python3-pip
+      become: yes
+    - name: setup poetry
+      block:
+        - name: add key
+          shell: "wget -qO- https://install.python-poetry.org | python3 -"
+        - name: Add the export PATH lines to bashrc
+          blockinfile:
+            path: ~/.bashrc
+            block: |
+              export PATH="$HOME/.poetry/bin:$PATH"
+              export PATH="$HOME/.local/bin:$PATH"
+            marker: "# {mark} ANSIBLE MANAGED BLOCK - DO NOT EDIT"
+            insertafter: EOF
+            create: yes
+    - name: install black and mypy
+      shell: pip3 install "{{ item }}"
+      with_items:
+        - black 
+        - mypy
+    - name: Download and install NVM and Node.js version 16
+      shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+        nvm install 16.15.0
+        nvm alias default 16.15.0
+        npm install -g npm
+        npm install -g prettier
+        npm install -g yarn 
+      args:
+        executable: /bin/bash
+    - name: setting up zotero and keepass
+      shell: |
+        sudo add-apt-repository -y ppa:phoerious/keepassxc
+        wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+        sudo apt update
+
+      # ignore_errors: yes
+    - name: Install Git, KeePassXC,golang,zotero
+      shell: sudo apt install -y "{{ item }}" 
+      with_items:
+        - git
+        - golang
+        - keepassxc
+        - zotero
+        - ripgrep
+      become: yes
+    - name: install vscode
+      block:
+        - name: Install required packages (wget and gpg)
+          shell: |
+            sudo apt-get install -y gpg
+            wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+            sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+            sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+            rm -f packages.microsoft.gpg
+
+        - name: update package cache and install
+          shell: |
+            sudo apt install -y apt-transport-https
+            sudo apt update
+            sudo apt install -y code
+    
+    - name: Install VSCode extensions
+      shell: code --install-extension "{{ item }}"
+      with_items:
+        - ms-python.python
+        - formulahendry.auto-rename-tag
+        - ritwickdey.LiveServer
+        - kisstkondoros.vscode-gutter-preview
+        - VisbyDev.folder-path-color
+        - usernamehw.errorlens
+        - esbenp.prettier-vscode
+        - hexmos.Lama2
+        - golang.Go
+        - ryanluker.vscode-coverage-gutters
+      become: no
+    - name: Install and setup google chrome
+      shell: |
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
+        sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+        sudo apt-get update 
+        sudo apt-get install -y google-chrome-stable
