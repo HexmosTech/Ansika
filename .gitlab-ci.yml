@@ -7,7 +7,7 @@ stages:
   - create-binary
 
 
-dockerize:
+create-binary:
   variables:
     CI_DEBUG_TRACE: "true"
     # enable verbose git output
