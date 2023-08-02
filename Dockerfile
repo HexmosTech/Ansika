@@ -2,11 +2,11 @@ FROM debian:bullseye-slim as base
 
 
 
+COPY ["requirement.txt","code/"]
 
 RUN apt-get update -y \    
     && apt-get install --no-install-recommends -y python3.9 \
-         pipenv \    
-    && cd /code \    
+         pipenv \       
     && pip install ansible==7.0.0 \
     && rm -rf /var/cache/apt/archives
 
