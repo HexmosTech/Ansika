@@ -8,7 +8,7 @@ RUN apt-get update -y \
     && apt-get install --no-install-recommends -y python3.9 \
          pipenv \    
     && cd /code \    
-    && pip install ansible==8.2.0 \
+    && pip install ansible==7.0.0 \
     && rm -rf /var/cache/apt/archives
 
 WORKDIR /code
@@ -27,7 +27,7 @@ RUN apt-get update -y \
         clang \
         libfuse-dev \
         upx \
-    && python3.9 -m pip install nuitka
+    && python3.9 -m pip install nuitka==1.7.5
 
 RUN python3.9 -m nuitka \
         --onefile \
@@ -36,7 +36,4 @@ RUN python3.9 -m nuitka \
         --include-data-files=/code/ext.yml=ext.yml \
         executor.py
 
-FROM scratch
-
-COPY --from=base /code/executor.bin /
 

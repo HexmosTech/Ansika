@@ -7,7 +7,9 @@ stages:
   - create-binary
 
 variables:
-  IMAGE_NAME: one-installer
+  REPO_NAME: https://git.apps.hexmos.com/hexmos/common/one-installer
+  TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest
+  TAG_COMMIT: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA
 
 create-binary:
   # variables:
@@ -23,9 +25,10 @@ create-binary:
     - main
   script:
     - echo "Performing direct binary execution"
-    - docker build -t $IMAGE_NAME .
+    - time docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     # Run the Docker container to extract executor.bin and save it as an artifact
-    - docker run --name one-installer $IMAGE_NAME /bin/true
+    - time docker build -t $TAG_COMMIT -t $TAG_LATEST .
+    - time docker run --name one-installer -t $TAG_COMMIT /bin/true
     - docker cp one-installer:/executor.bin executor.bin
   artifacts:
     paths:
