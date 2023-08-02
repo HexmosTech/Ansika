@@ -19,10 +19,13 @@ create-binary:
   #   # enable verbose ssh output
   #   GIT_SSH_COMMAND: "ssh -vvv"
   tags:
-    - fw02
+    - fw01
   stage: create-binary
   only:
     - main
+  image: docker:20.10.16
+  services:
+    - name: docker:20.10.16
   script:
     - echo "Performing direct binary execution"
     - time docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
