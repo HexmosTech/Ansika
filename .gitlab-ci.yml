@@ -19,7 +19,7 @@ create-binary:
   #   # enable verbose ssh output
   #   GIT_SSH_COMMAND: "ssh -vvv"
   tags:
-    - fw01
+    - fw02
   stage: create-binary
   only:
     - main
@@ -29,7 +29,7 @@ create-binary:
     # Run the Docker container to extract executor.bin and save it as an artifact
     - time docker build -t $TAG_COMMIT -t $TAG_LATEST .
     - time docker run --name one-installer -t $TAG_COMMIT /bin/true
-    - docker cp one-installer:/executor.bin executor.bin
+    - time docker cp one-installer:/executor.bin executor.bin
   artifacts:
     paths:
       - executor.bin
