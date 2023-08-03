@@ -28,10 +28,10 @@ create-binary:
     - name: docker:20.10.16
   script:
     - echo "Performing direct binary execution"
-    # - time docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - time docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     # Run the Docker container to extract executor.bin and save it as an artifact
-    # - time docker build -t $TAG_COMMIT -t $TAG_LATEST .
-    # - time docker run --name one-installer -t $TAG_COMMIT /bin/true
+    - time docker build -t $TAG_COMMIT -t $TAG_LATEST .
+    - time docker run --name one-installer -d -it $REPO_NAME
     - time docker cp  4a2a492114c8:/code/executor.bin executor.bin 
   artifacts:
     paths:
