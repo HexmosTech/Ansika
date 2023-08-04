@@ -5,6 +5,7 @@ before_script:
 
 stages:
   - create-binary
+  - upload-to-s3
 
 variables:
   REPO_NAME: git.apps.hexmos.com:5050/hexmos/commons/one-installer/main
@@ -41,6 +42,7 @@ upload-to-s3:
   image:
     name: amazon/aws-cli
     entrypoint: [""]
+  stage: upload-to-s3
   script:
     - aws --version
     - aws s3 cp executor.bin s3://$AWS_S3_BUCKET/executor.bin
