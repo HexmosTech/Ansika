@@ -36,3 +36,13 @@ create-binary:
   artifacts:
     paths:
       - executor.bin
+
+upload-to-s3:
+  image:
+    name: amazon/aws-cli
+    entrypoint: [""]
+  script:
+    - aws --version
+    - aws s3 cp executor.bin s3://$AWS_S3_BUCKET/executor.bin
+  only:
+    - main
