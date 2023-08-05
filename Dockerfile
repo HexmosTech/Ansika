@@ -12,7 +12,7 @@ RUN apt-get update -y \
 
 WORKDIR /code
 
-COPY ./ext.yml /code
+COPY ./one_installer.yml /code
 
 COPY ./executor.py /code
 
@@ -32,7 +32,7 @@ RUN python3.9 -m nuitka \
         --onefile \
         --include-package-data=ansible:'*.py' \
         --include-package-data=ansible:'*.yml' \ 
-        --include-data-files=/code/ext.yml=ext.yml \
+        --include-data-files=/code/one_installer.yml=one_installer.yml \
         executor.py
 
 

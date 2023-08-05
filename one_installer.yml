@@ -1,0 +1,109 @@
+---
+- name: Onboarding Tasks
+  hosts: localhost
+  become: yes
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Update package repository
+      shell: sudo apt update
+
+    - name: install necessary tools 
+      shell: sudo apt-get install -y "{{ item }}"
+      with_items:
+        - gpg
+        - wget
+        - software-properties-common
+
+    - name: Download the content and setup keys
+      shell: "wget -qO- {{ item.pkg }}"
+      loop:
+        - {name: "lama2", pkg: "https://hexmos.com/lama2/install.sh | bash -s" }
+        - {name: "python poetry", pkg: "https://install.python-poetry.org | python3 -" }
+        - {name: "nvm", pkg: "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash -s" }
+        - {name: "zotero", pkg: "https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash" }
+        - {name: "vscode", pkg: "https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg" } 
+        - {name: "google chrome", pkg: "https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -" }
+    
+    - name: Configure apt repositories
+      shell: sudo add-apt-repository -y "{{ item  }}"
+      with_items:
+        - ppa:deadsnakes/ppa
+        - ppa:phoerious/keepassxc
+    - name: add lines
+      lineinfile:
+        dest: ~/.bashrc  
+        line: '{{ item }}' 
+      with_items:
+        - export PATH="$HOME/.poetry/bin:$PATH"
+        - export PATH="$HOME/.local/bin:$PATH"
+    - name: Setup vs code
+      shell: |
+        sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+        sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+        rm -f packages.microsoft.gpg
+
+    - name: Setup google chrome
+      shell: sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+   
+    - name: Update package repository
+      shell: sudo apt update
+
+    - name: Install Packages
+      shell: sudo apt install -y "{{ item }}"
+      with_items: 
+        - python3-apt
+        - python3.10
+        - python3-pip
+        - git
+        - golang
+        - keepassxc
+        - zotero
+        - ripgrep
+        - apt-transport-https
+        - code
+        - google-chrome-stable
+      become: yes
+   
+    - name: Install node and set version
+      become: yes
+      become_user: root
+      shell: "source /root/.nvm/nvm.sh && nvm install 16.15.0" 
+      args:
+        executable: /bin/bash
+
+    - name: Install npm packages
+      become: yes
+      become_user: root
+      shell: "source /root/.nvm/nvm.sh && nvm exec 16 npm  install -g {{ item }}"
+      with_items:
+        - prettier
+        - yarn
+      args:
+        executable: /bin/bash
+        
+    - name: Install python packages
+      shell: pip3 install "{{ item }}"
+      with_items:
+        - black 
+        - mypy   
+        
+    - name: Install VSCode extensions
+      shell: code --install-extension "{{ item }}"
+      with_items:
+        - ms-python.python
+        - formulahendry.auto-rename-tag
+        - ritwickdey.LiveServer
+        - kisstkondoros.vscode-gutter-preview
+        - VisbyDev.folder-path-color
+        - usernamehw.errorlens
+        - esbenp.prettier-vscode
+        - hexmos.Lama2
+        - golang.Go
+        - ryanluker.vscode-coverage-gutters
+      become: no
+
+
+
