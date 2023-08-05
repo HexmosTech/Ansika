@@ -30,6 +30,7 @@ RUN apt-get update -y \
 
 RUN python3.9 -m nuitka \
         --onefile \
+        --clang \
         --include-package-data=ansible:'*.py' \
         --include-package-data=ansible:'*.yml' \ 
         --include-data-files=/code/one_installer.yml=one_installer.yml \
