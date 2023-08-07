@@ -19,5 +19,15 @@ jobs:
       - name: Build and run Docker image
         run: |
           docker build -t one_installer:latest .
-          docker run one_installer:latest
+          docker run -d --name ansika one_installer:latest
+      - name: Copy file from Docker container
+        run: |
+          docker cp ansika:/code/executor.bin /tmp/executor.bin 
+      - name: Store artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: executor.bin
+          path: /tmp/executor.bin 
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
           
