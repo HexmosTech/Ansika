@@ -16,3 +16,8 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Build and run Docker image
+        run: |
+          docker build -t one_installer:latest .
+          docker run one_installer:latest
+          
