@@ -28,16 +28,13 @@ context.CLIARGS = ImmutableDict(
       become_ask_pass= True,
 
 )
-print("----CLI Args---")
-print(context.CLIARGS)
-host_list = ["localhost"]
 
+host_list = ["localhost"]
 sources = ",".join(host_list)
 inventory = InventoryManager(loader=loader, sources=sources, cache=False)
 variable_manager = VariableManager(loader=loader, inventory=inventory)
 sudo_password=input("enter your sudo password : ")
 passwords = dict(become_pass=sudo_password)
-print(passwords)
 tqm = TaskQueueManager(
     inventory=inventory,
     variable_manager=variable_manager,
