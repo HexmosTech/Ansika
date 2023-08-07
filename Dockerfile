@@ -2,7 +2,6 @@ FROM debian:bullseye-slim as base
 
 
 
-COPY ["requirement.txt","code/"]
 
 RUN apt-get update -y \    
     && apt-get install --no-install-recommends -y python3.9 \
