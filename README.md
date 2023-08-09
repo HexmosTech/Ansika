@@ -3,6 +3,6 @@
 <div align="center">
 <img src="assets/banner.png" width="80%" />
 
-[![Binary Build](https://github.com/HexmosTech/Ansika/actions/workflows/github-actions-demo.yml/badge.svg)](https://github.com/HexmosTech/Ansika/actions/workflows/github-actions-demo.yml)
+[![Binary Build And Release](https://github.com/HexmosTech/Ansika/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/HexmosTech/Ansika/actions/workflows/build-and-release.yml)
 
 </div>
