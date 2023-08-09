@@ -1,11 +1,11 @@
 name: Binary Build And Release
 run-name: ${{ github.actor }} building the binary using nuitka 🚀
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - 'v*'
   workflow_dispatch:
 
 
