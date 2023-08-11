@@ -6,11 +6,13 @@
 </div>
 
 ## Overview
-Ansika (Ansible + Nuitka) simplifies the task of bulk onboarding software installation and configuration tasks into a single command. It reduces the workload and effort for Technical Leads and Engineers by swiftly downloading, authorizing, and activating a binary file which sets up and installs software packages, libraries, and system or package configurations, making the process effortless when setting up software on computers for employees, interns, or supporting teams.
 
-Ansika streamlines the process into a single executable file, eliminating the need for external dependencies. By configuring your software packages, libraries, and settings within the ansible playbook file (one_installer.yml), a single command takes care of the rest. This command seamlessly downloads, provides permissions, and executes the binary file on local machines.
+Ansika simplifies bulk software installation tasks, condensing all installation and configuration activities into a single command. It reduces the employee onboarding workload for technical leads and engineers by quickly downloading, authorizing, and executing a binary file. Ansika sets up software,  libraries, and extensions for new employees or interns.
+
+The produced binary has no external dependencies, and requires minimal experience to initiate. One simply has to define software packages, libraries, and settings in the ansible playbook file ([one_installer.yml](https://github.com/HexmosTech/Ansika/blob/main/one_installer.yml)), and push changes to github to get variations of this binary release. The resultant command smoothly downloads, grants permissions, and executes the binary file on local machines.
 
 ## Benefits
+
 - Install any combination of software packages, libraries and extensions
 - Run commands and configure setting files
 - Produce zero-dependency binaries
@@ -22,13 +24,16 @@ Ansika streamlines the process into a single executable file, eliminating the ne
 ## Usage
 
 ### Fork the Repository
+
 To create the one-line installer for your team or company, begin by forking this repository.After forking, you can make changes locally to tailor the code or content according to your specific requirements.
 ### Requirements
+
 - python: Version 2.7 or 3.5 and higher
 - Ansible: Version 2.7 or higher (depends on python version installed)
 - Nuitka: Version 1.7.5 or higher
 
 ### Installing Requirements
+
 - Install Ansible : `pip3 install ansible==8.2.0`
 - Install Nuitka : `pip3 install nuitka==1.7.5`
 ### Modify Ansible Playbook 
@@ -36,6 +41,7 @@ To create the one-line installer for your team or company, begin by forking this
  Modify the ansible playbook file in this repository ([one_installer.yml](https://github.com/HexmosTech/Ansika/blob/main/one_installer.yml)) to include additional instructions for installing software packages, tools, extensions, and configurations. For further insights into ansible and ansible playbook, you can refer to the [Ansible documentation](https://docs.ansible.com/ansible/latest/getting_started/index.html).
 
 ### Local Testing
+
 You can easily test installation or configuration tasks by running a Python script locally. Here's how:
 
 #### Executing Ansible Python API
@@ -48,6 +54,7 @@ You can easily test installation or configuration tasks by running a Python scri
 This process allows you to quickly verify the installation and configuration steps on your local machine.
 
 #### Build Binary using Nuitka 
+
 For testing the binary 
 run the command `python3 -m nuitka --onefile   --include-package-data=ansible:'*.py' --include-package-data=ansible:'*.yml' --include-data-files=one_installer.yml=one_installer.yml  executor.py`
 
@@ -69,6 +76,7 @@ If you encounter any permission issues run `chmod +x executor.bin`
 Release the binary file and generate a one line command easily using the github actions and workflows.
 
 #### Github Workflow
+
 The github workflow mentioned in the file (build-and-release.yml) will handle the binary creation and release of the binary.
 - First commit your changes.
 - Then create a tag name using the command `git tag v1.0.0`.
