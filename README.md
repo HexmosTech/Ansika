@@ -81,7 +81,7 @@ Release the binary file and generate a one line command easily using the github 
 
 #### Github Workflow
 
-The github workflow mentioned in the file [build-and-release.yml](./.github/build-and-release.yml) will handle the binary creation and release of the binary.
+The github workflow mentioned in the file [build-and-release.yml](./.github/workflows/build-and-release.yml) will handle the binary creation and release of the binary.
 
 - First commit your changes.
 - Then create a tag name using the command `git tag v1.0.0`.
