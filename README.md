@@ -117,5 +117,5 @@ Share this URL with employees and interns to help them set up the software, tool
 ### Blog Post about Ansika
 
 ### Acknowledgements
- - Ansika
+ - Ansible
  - Nuitka
