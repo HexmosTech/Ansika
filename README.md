@@ -26,6 +26,7 @@ The produced binary has no external dependencies, and requires minimal experienc
 ### Fork the Repository
 
 To create the one-line installer for your team or company, begin by forking this repository.After forking, you can make changes locally to tailor the code or content according to your specific requirements.
+
 ### Requirements
 
 - python: Version 2.7 or 3.5 and higher
@@ -55,8 +56,12 @@ This process allows you to quickly verify the installation and configuration ste
 
 #### Build Binary using Nuitka 
 
-For testing the binary 
-run the command `python3 -m nuitka --onefile   --include-package-data=ansible:'*.py' --include-package-data=ansible:'*.yml' --include-data-files=one_installer.yml=one_installer.yml  executor.py`
+For building the binary run the command:
+
+```bash
+
+python3 -m nuitka --onefile   --include-package-data=ansible:'*.py' --include-package-data=ansible:'*.yml' --include-data-files=one_installer.yml=one_installer.yml  executor.py
+```
 
 The `--include-package-data` option tells Nuitka to include all files that match the specified pattern in the package data of the specified module. In this case, the pattern *.py and *.yml will match all Python files and YAML files in the ansible module.
 
@@ -64,10 +69,9 @@ The `--include-data-files` option tells Nuitka to include the ansible playbook f
 
 You may refer to the [Nuitka user manual](https://nuitka.net/doc/user-manual.html) for more information on the available options.
 
-The output binary file name of the above command is the same as the Python file name.
 #### Executing binary
 
-simply run the executable binary file by `./executor.bin`
+Simply run the executable binary file by `./executor.bin`
 
 If you encounter any permission issues run `chmod +x executor.bin` 
 
@@ -77,13 +81,14 @@ Release the binary file and generate a one line command easily using the github 
 
 #### Github Workflow
 
-The github workflow mentioned in the file (build-and-release.yml) will handle the binary creation and release of the binary.
+The github workflow mentioned in the file [build-and-release.yml](./.github/build-and-release.yml) will handle the binary creation and release of the binary.
+
 - First commit your changes.
 - Then create a tag name using the command `git tag v1.0.0`.
 - Push the changes.
 
-if you encounter any permission issues in the workflow
-follow this steps:
+If you encounter any permission issues in the workflow follow this steps:
+
 - Go to the repository "Settings".
 - After that, it will show you a left pane where you will find "Actions"
 - Expand the "Actions" tab
@@ -96,15 +101,19 @@ follow this steps:
 #### Binary Release
 
 After the successful completion of the workflow you can see a new release with tag_name in the github releases.
+
 #### Oneline Command
 
-Finally, generate the one-line command
+Finally, generate the one-line command:
 
-`wget  -q https://github.com/USER/PROJECT/releases/latest/download/executor.bin && chmod +x executor.bin && ./executor.bin`
+```bash
+wget  -q https://github.com/USER/PROJECT/releases/latest/download/executor.bin && chmod +x executor.bin && ./executor.bin
+```
 
 replace `USER` and `PROJECT` with github username and repository name.
 
 Share this URL with employees and interns to help them set up the software, tools, and configurations they need for onboarding to your team.
+
 ### Blog Post about Ansika
 
 ### Acknowledgements
