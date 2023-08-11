@@ -85,7 +85,7 @@ The github workflow mentioned in the file [build-and-release.yml](./.github/work
 
 - First commit your changes.
 - Then create a tag name using the command `git tag v1.0.0`.
-- Push the changes.
+- Push the changes `git push v1.0.0`.
 
 If you encounter any permission issues in the workflow follow this steps:
 

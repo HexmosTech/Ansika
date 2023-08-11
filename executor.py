@@ -10,6 +10,8 @@ from ansible import context
 from ansible.executor.playbook_executor import PlaybookExecutor
 import os
 from ansible.utils.display import Display
+import getpass
+
 
 loader = DataLoader()
 
@@ -23,18 +25,18 @@ context.CLIARGS = ImmutableDict(
     verbosity=4,
     check=False,
     start_at_task=None,
-    become_method= 'sudo',
-      become_user= None, 
-      become_ask_pass= True,
-
+    become_method="sudo",
+    become_user=None,
+    become_ask_pass=True,
 )
 
 host_list = ["localhost"]
 sources = ",".join(host_list)
 inventory = InventoryManager(loader=loader, sources=sources, cache=False)
 variable_manager = VariableManager(loader=loader, inventory=inventory)
-sudo_password=input("enter your sudo password : ")
+sudo_password = getpass.getpass("Enter your root password :")
 passwords = dict(become_pass=sudo_password)
+
 tqm = TaskQueueManager(
     inventory=inventory,
     variable_manager=variable_manager,
@@ -54,9 +56,8 @@ playbook_executor = PlaybookExecutor(
 
 try:
     results = playbook_executor.run()
-    
-finally:
 
+finally:
     tqm.cleanup()
     if loader:
         loader.cleanup_all_tmp_files()
