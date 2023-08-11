@@ -1,4 +1,4 @@
-# `Ansika`: One-line installer for Smoother Employee Onboarding
+# `Ansika`: One-line Installer for Smoother Employee Onboarding
 <div align="center">
 <img src="assets/ANSIKA.png" width="100%" />
 
