@@ -1,4 +1,4 @@
-# `Ansika`: One-line installer for Smoother Employee Onboarding
+# `Ansika`: One-line Installer for Smoother Employee Onboarding
 <div align="center">
 <img src="assets/ANSIKA.png" width="100%" />
 
@@ -117,5 +117,5 @@ Share this URL with employees and interns to help them set up the software, tool
 ### Blog Post about Ansika
 
 ### Acknowledgements
- - Ansika
+ - Ansible
  - Nuitka
