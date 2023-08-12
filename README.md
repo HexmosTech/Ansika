@@ -69,7 +69,11 @@ For building the binary file run the command:
 
 ```bash
 
-python3 -m nuitka --onefile   --include-package-data=ansible:'*.py' --include-package-data=ansible:'*.yml' --include-data-files=one_installer.yml=one_installer.yml  executor.py
+python3 -m nuitka --onefile \
+--include-package-data=ansible:'*.py' \
+--include-package-data=ansible:'*.yml' \
+--include-data-files=one_installer.yml=one_installer.yml \
+ executor.py
 ```
 
 The `--include-package-data` option tells Nuitka to include all files that match the specified pattern in the package data of the specified module. In this case, the pattern *.py and *.yml will match all Python files and YAML files in the ansible module.
