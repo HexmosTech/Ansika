@@ -127,7 +127,7 @@ If you encounter any permission issues in the workflow follow this steps:
 
 After the successful completion of the workflow you can see a new release with tag_name in the github releases.
 
-#### Oneline Command
+#### One-line Command
 
 Finally, generate the one-line command:
 
