@@ -43,20 +43,29 @@ To create the one-line installer for your team or company, begin by forking this
 
 ### Local Testing
 
-You can easily test installation or configuration tasks by running a Python script locally. Here's how:
+You can effortlessly test installation or configuration tasks by executing the binary file within a Docker container locally. We recommend utilizing a Docker container for testing due to its provision of an isolated platform and package independence, ensuring rigorous evaluation of your Ansible installation instructions and binary file. Here's the procedure:
 
-#### Executing Ansible Python API
+- Begin by pulling the Ubuntu 20.04 image from Docker Hub : 
+ ```bash
+ docker pull ubuntu:20.04
+ ```
 
+- Run an Ubuntu container named `my_ubuntu_container` with an interactive shell, a mounted volume,and start a bash session : 
+```bash
+docker run -it --name my_ubuntu_container -v ~/Docker_Share:/data ubuntu /bin/bash
+```
+- The mounted volume facilitates file sharing between the Docker container and the host machine.
+
+
+#### Ansible Python API
+
+- We executing the ansible playbook file inside the executor.py
 - Adjust the playbook file path in the [executor.py](https://github.com/HexmosTech/Ansika/blob/main/executor.py#L47) file.
-- Execute the command `python3 executor.py` in your terminal.
-- Provide your system's root password when prompted.
-- Review the playbook tasks to identify any potential issues.
-
-This process allows you to quickly verify the installation and configuration steps on your local machine.
+- You can refer [Ansible Python API](https://docs.ansible.com/ansible/latest/dev_guide/developing_api.html) for more details about the code.
 
 #### Build Binary using Nuitka 
 
-For building the binary run the command:
+For building the binary file run the command:
 
 ```bash
 
@@ -70,10 +79,26 @@ The `--include-data-files` option tells Nuitka to include the ansible playbook f
 You may refer to the [Nuitka user manual](https://nuitka.net/doc/user-manual.html) for more information on the available options.
 
 #### Executing binary
+First copy the binary file from the host machine to the docker container : 
+```bash
+sudo cp executor.bin ~/Docker_Share
+```
 
-Simply run the executable binary file by `./executor.bin`
+Inside the docker container go to the data directory :
+```bash
+cd /data
+```
+Run the executable binary file :
+```bash
+./executor.bin
+```
 
-If you encounter any permission issues run `chmod +x executor.bin` 
+If you encounter any permission issues run :
+```bash
+chmod +x executor.bin 
+``` 
+
+
 
 ### Release and Oneline command
 
