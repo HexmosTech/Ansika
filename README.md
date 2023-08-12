@@ -9,7 +9,7 @@
 
 Ansika simplifies bulk software installation and configuration tasks into a single command. It reduces the employee onboarding workload for technical leads and engineers. In a few steps, Ansika installs and configures software, libraries, and extensions for new employees or interns.
 
-Ansika produces a binary file that does not requires external dependencies. Simply define software, libraries, and configurations in the Ansible playbook file ([one_installer.yml](https://github.com/HexmosTech/Ansika/blob/main/one_installer.yml)). Ansika will release a new binary in GitHub releases. The one-line command downloads, authorize and executes the binary file on local machines.
+Ansika produces a binary file that does not requires external dependencies. Simply define software, libraries, and configurations in the Ansible playbook file ([one_installer.yml](https://github.com/HexmosTech/Ansika/blob/main/one_installer.yml)). Ansika will release a new binary in GitHub releases. The one-line command downloads, authorizes and executes the binary file on local machines.
 
 ## Benefits
 
@@ -59,7 +59,7 @@ docker run -it --name my_ubuntu_container -v ~/Docker_Share:/data ubuntu /bin/ba
 
 #### Ansible Python API
 
-- We executing the ansible playbook file inside the executor.py
+- Specify the ansible playbook file that should be executed inside the executor.py
 - Adjust the playbook file path in the [executor.py](https://github.com/HexmosTech/Ansika/blob/main/executor.py#L47) file.
 - You can refer [Ansible Python API](https://docs.ansible.com/ansible/latest/dev_guide/developing_api.html) for more details about the code.
 
@@ -104,7 +104,7 @@ chmod +x executor.bin
 
 
 
-### Release and Oneline command
+### Release and One-line command
 
 Release the binary file and generate a one line command easily using the github actions and workflows.
 
@@ -145,6 +145,8 @@ Share this URL with employees and interns to help them set up the software, tool
 
 ### Blog Post about Ansika
 
+[Ansible + Nuitka: One-line Installer for Smoother Employee Onboarding](https://journal.hexmos.com/ansika/)
 ### Acknowledgements
+
  - Ansible
  - Nuitka
