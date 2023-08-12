@@ -7,9 +7,9 @@
 
 ## Overview
 
-Ansika simplifies bulk software installation tasks, condensing all installation and configuration activities into a single command. It reduces the employee onboarding workload for technical leads and engineers by quickly downloading, authorizing, and executing a binary file. Ansika sets up software,  libraries, and extensions for new employees or interns.
+Ansika simplifies bulk software installation and configuration tasks into a single command. It reduces the employee onboarding workload for technical leads and engineers. In a few steps, Ansika installs and configures software, libraries, and extensions for new employees or interns.
 
-The produced binary has no external dependencies, and requires minimal experience to initiate. One simply has to define software packages, libraries, and settings in the ansible playbook file ([one_installer.yml](https://github.com/HexmosTech/Ansika/blob/main/one_installer.yml)), and push changes to github to get variations of this binary release. The resultant command smoothly downloads, grants permissions, and executes the binary file on local machines.
+Ansika produces a binary file that does not requires external dependencies. Simply define software, libraries, and configurations in the Ansible playbook file ([one_installer.yml](https://github.com/HexmosTech/Ansika/blob/main/one_installer.yml)). Ansika will release a new binary in GitHub releases. The one-line command downloads, authorize and executes the binary file on local machines.
 
 ## Benefits
 
@@ -43,7 +43,7 @@ To create the one-line installer for your team or company, begin by forking this
 
 ### Local Testing
 
-You can effortlessly test installation or configuration tasks by executing the binary file within a Docker container locally. We recommend utilizing a Docker container for testing due to its provision of an isolated platform and package independence, ensuring rigorous evaluation of your Ansible installation instructions and binary file. Here's the procedure:
+We recommend testing the binary within a Docker container first. Docker isolates your Ansible installation and binary file execution from the rest of your system. Here's the procedure:
 
 - Begin by pulling the Ubuntu 20.04 image from Docker Hub : 
  ```bash
