@@ -35,7 +35,7 @@ To create the one-line installer for your team or company, begin by forking this
 
 ### Installing Requirements
 
-- Install Ansible : `pip3 install ansible==8.2.0`
+- Install Ansible : `pip3 install ansible==7.0.0`
 - Install Nuitka : `pip3 install nuitka==1.7.5`
 ### Modify Ansible Playbook 
 
@@ -43,18 +43,18 @@ To create the one-line installer for your team or company, begin by forking this
 
 ### Local Testing
 
-We recommend testing the binary within a Docker container first. Docker isolates your Ansible installation and binary file execution from the rest of your system. Here's the procedure:
+We recommend testing the binary within a Docker container first. Docker isolates your Ansible installation and binary file execution from the rest of your system. Here's the procedure :
 
 - Begin by pulling the Ubuntu 20.04 image from Docker Hub : 
  ```bash
  docker pull ubuntu:20.04
  ```
 
-- Run an Ubuntu container named `my_ubuntu_container` with an interactive shell, a mounted volume,and start a bash session : 
+- Run an Ubuntu container named `my_ubuntu_container` with an interactive shell, a mounted volume, and start a bash session : 
 ```bash
 docker run -it --name my_ubuntu_container -v ~/Docker_Share:/data ubuntu /bin/bash
 ```
-- The mounted volume facilitates file sharing between the Docker container and the host machine.
+- The mounted volume facilitates file sharing between the Docker container and the host machine through the `Docker_Share` directory in your host machine. 
 
 
 #### Ansible Python API
@@ -88,7 +88,7 @@ First copy the binary file from the host machine to the docker container :
 sudo cp executor.bin ~/Docker_Share
 ```
 
-Inside the docker container go to the data directory :
+The shared files can be found in the `data` directory inside the docker container :
 ```bash
 cd /data
 ```
