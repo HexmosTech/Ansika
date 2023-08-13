@@ -78,7 +78,7 @@ python3 -m nuitka --onefile \
 
 The `--include-package-data` option tells Nuitka to include all files that match the specified pattern in the package data of the specified module. In this case, the pattern *.py and *.yml will match all Python files and YAML files in the ansible module.
 
-The `--include-data-files` option tells Nuitka to include the ansible playbook file in the resulting executable. In this case, the file one_installer.yml will be included in the executable.
+The `--include-data-files=one_installer.yml=one_installer.yml` option tells Nuitka to include the ansible playbook file `one_installer.yml` in the distribution.
 
 You may refer to the [Nuitka user manual](https://nuitka.net/doc/user-manual.html) for more information on the available options.
 
