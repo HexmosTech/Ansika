@@ -82,6 +82,7 @@
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bashrc
         eval "$(/opt/homebrew/bin/brew shellenv)"
+        source ~/.bashrc
       become: yes
 
     - name: Install rupa/z, and mcfly
@@ -90,7 +91,7 @@
       shell: |
         # Install rupa/z
         curl -fsSL https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.z.sh
-        echo 'source ~/z/.z.sh' >> ~/.bashrc
+        echo 'source ~/.z.sh' >> ~/.bashrc
 
         # Install mcfly
         brew tap cantino/mcfly https://github.com/cantino/mcfly
@@ -173,6 +174,7 @@
         - apt-transport-https
         - code
         - google-chrome-stable
+      ignore_errors : yes
       
     - name: Install NVM (Node Version Manager)
       become: yes
@@ -214,7 +216,8 @@
         - hexmos.Lama2
         - golang.Go
         - ryanluker.vscode-coverage-gutters
-
+      ignore_errors : yes
+      
     - name: Install GVM (Go Version Manager)
       become: yes
       become_user: "{{ current_user.stdout }}"
