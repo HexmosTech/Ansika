@@ -129,7 +129,7 @@
         - { name: "vscode", pkg: "curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg" } 
         - { name: "google chrome", pkg: "curl -sSL https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -" }
       ignore_errors : yes
-      
+
     - name: Configure apt repositories
       shell: sudo add-apt-repository -y "{{ item  }}"
       with_items:
@@ -157,10 +157,12 @@
     - name: Update package repository
       shell: sudo apt update
       ignore_errors: yes
-
     - name: Install Packages
-      shell: sudo apt install -y "{{ item }}"
-      with_items: 
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
         - python3-apt
         - python3.10
         - python3-pip
