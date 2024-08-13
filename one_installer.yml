@@ -54,6 +54,11 @@
         executable: /bin/bash
       register: podman_status
 
+    - name: Install Git
+      package:
+        name: git
+        state: present
+
     - name: Install pyenv
       become: yes
       become_user: "{{ current_user.stdout }}"
@@ -72,6 +77,12 @@
     - name: Display pyenv installation status
       debug:
         msg: "pyenv installation status: {{ pyenv_status.stdout }}"
+    - name: Install Homebrew
+      shell: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bashrc
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+      become: yes
 
     - name: Install rupa/z, and mcfly
       become: yes
@@ -117,7 +128,8 @@
         - { name: "zotero", pkg: "curl -sSL https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash" }
         - { name: "vscode", pkg: "curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg" } 
         - { name: "google chrome", pkg: "curl -sSL https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -" }
-
+      ignore_errors : yes
+      
     - name: Configure apt repositories
       shell: sudo add-apt-repository -y "{{ item  }}"
       with_items:
