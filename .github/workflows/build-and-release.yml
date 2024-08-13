@@ -2,6 +2,8 @@ name: Binary Build And Release
 run-name: ${{ github.actor }} building the binary using nuitka 🚀
 on:
   push:
+    branches:
+      - jishnu/AnsikaVersionManagements
     tags:
     - '*'
   workflow_dispatch:
