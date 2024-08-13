@@ -206,6 +206,7 @@
       with_items:
         - black 
         - mypy
+      ignore_errors : yes
 
     - name: Install VSCode extensions
       become_user: "{{ current_user.stdout }}"
