@@ -100,13 +100,10 @@
         # Install rupa/z
         curl -fsSL https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.z.sh
         echo 'source ~/.z.sh' >> ~/.bashrc
-
+        
         # Install mcfly
-        brew tap cantino/mcfly https://github.com/cantino/mcfly
-        brew install mcfly
-        if [[ -f "$(brew --prefix)/opt/mcfly/mcfly.bash" ]]; then
-          source "$(brew --prefix)/opt/mcfly/mcfly.bash"
-        fi
+        curl -LSfs https://raw.githubusercontent.com/cantino/mcfly/master/ci/install.sh | sudo sh -s -- --git cantino/mcfly
+        echo 'eval "$(mcfly init bash)"' >> ~/.bashrc
 
         # Apply changes
         . ~/.bashrc
