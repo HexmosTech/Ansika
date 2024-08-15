@@ -1,6 +1,5 @@
 .gitlab-ci.yml
 ext.yml
-requirement.txt
 executor.build
 executor.dist
 executor.onefile-build
