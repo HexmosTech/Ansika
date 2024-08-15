@@ -1,4 +1,3 @@
----
 - name: Onboarding Tasks
   hosts: localhost
   become: yes
@@ -9,88 +8,208 @@
   tasks:
     - name: Update package repository
       shell: sudo apt update
+      ignore_errors: yes
 
-    - name: install necessary tools 
+
+    - name: Install necessary tools 
       shell: sudo apt-get install -y "{{ item }}"
       with_items:
         - gpg
         - wget
         - software-properties-common
 
-    - name: Download the content and setup keys
-      shell: "wget -qO- {{ item.pkg }}"
-      loop:
-        - {name: "lama2", pkg: "https://hexmos.com/lama2/install.sh | bash -s" }
-        - {name: "python poetry", pkg: "https://install.python-poetry.org | python3 -" }
-        - {name: "nvm", pkg: "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash -s" }
-        - {name: "zotero", pkg: "https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash" }
-        - {name: "vscode", pkg: "https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg" } 
-        - {name: "google chrome", pkg: "https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -" }
+    - name: Get the current username
+      shell: echo $SUDO_USER || echo $USER
+      register: current_user
+      changed_when: false
     
+    - name: Install required dependencies
+      become: yes
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: yes
+      ignore_errors: yes
+
+    - name: Update the apt package index
+      become: yes
+      apt:
+        update_cache: yes
+      ignore_errors: yes
+
+
+    - name: Install Podman and podman-docker
+      become: yes
+      become_user: "{{ current_user.stdout }}"
+      shell: |
+        sudo apt-get update
+        sudo apt-get install -y podman
+        sudo apt-get install -y podman-docker
+      args:
+        executable: /bin/bash
+      register: podman_status
+
+    - name: Install Git
+      package:
+        name: git
+        state: present
+
+    - name: Install pyenv
+      become: yes
+      become_user: "{{ current_user.stdout }}"
+      shell: |
+        curl https://pyenv.run | bash
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+        echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+        echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
+        echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+        echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+        source ~/.bashrc
+      args:
+        executable: /bin/bash
+      register: pyenv_status
+
+    - name: Display pyenv installation status
+      debug:
+        msg: "pyenv installation status: {{ pyenv_status.stdout }}"
+    - name: Install Homebrew
+      become: no
+      shell: |
+        if ! command -v brew &> /dev/null; then
+          echo "Homebrew not found. Installing Homebrew."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          . ~/.bashrc
+        else
+          echo "Homebrew is already installed."
+        fi
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
+
+    - name: Install rupa/z and mcfly
+      become: yes
+      become_user: "{{ current_user.stdout }}"
+      shell: |
+        # Install rupa/z
+        curl -fsSL https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.z.sh
+        echo 'source ~/.z.sh' >> ~/.bashrc
+        
+        # Install mcfly
+        curl -LSfs https://raw.githubusercontent.com/cantino/mcfly/master/ci/install.sh | sudo sh -s -- --git cantino/mcfly
+        echo 'eval "$(mcfly init bash)"' >> ~/.bashrc
+
+        # Apply changes
+        . ~/.bashrc
+      args:
+        executable: /bin/bash
+
+
+    - name: Install GVM dependencies
+      shell: sudo apt-get install -y "{{ item }}"
+      with_items:
+        - curl
+        - git
+        - mercurial
+        - make
+        - binutils
+        - bison
+        - gcc
+        - build-essential
+        - bsdmainutils 
+      ignore_errors: yes
+
+    - name: Download and install tools via shell scripts
+      shell: "{{ item.pkg }}"
+      loop:
+        - { name: "lama2", pkg: "curl -sSL https://hexmos.com/lama2/install.sh | bash -s" }
+        - { name: "python poetry", pkg: "curl -sSL https://install.python-poetry.org | python3 -" }
+        - { name: "nvm", pkg: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash -s" }
+        - { name: "zotero", pkg: "curl -sSL https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash" }
+        - { name: "vscode", pkg: "curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg" } 
+        - { name: "google chrome", pkg: "curl -sSL https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -" }
+      ignore_errors : yes
+
     - name: Configure apt repositories
       shell: sudo add-apt-repository -y "{{ item  }}"
       with_items:
         - ppa:deadsnakes/ppa
         - ppa:phoerious/keepassxc
-    - name: add lines
+      ignore_errors: yes
+
+    - name: Add environment variable paths
       lineinfile:
-        dest: ~/.bashrc  
+        dest: ~/.bashrc
         line: '{{ item }}' 
       with_items:
         - export PATH="$HOME/.poetry/bin:$PATH"
         - export PATH="$HOME/.local/bin:$PATH"
-    - name: Setup vs code
+
+    - name: Setup VS Code
       shell: |
         sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
         sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
         rm -f packages.microsoft.gpg
 
-    - name: Setup google chrome
+    - name: Setup Google Chrome
       shell: sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-   
+
     - name: Update package repository
       shell: sudo apt update
-
+      ignore_errors: yes
     - name: Install Packages
-      shell: sudo apt install -y "{{ item }}"
-      with_items: 
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
         - python3-apt
         - python3.10
         - python3-pip
         - git
-        - golang
         - keepassxc
         - zotero
         - ripgrep
         - apt-transport-https
         - code
         - google-chrome-stable
+      ignore_errors : yes
+      
+    - name: Install NVM (Node Version Manager)
       become: yes
-   
-    - name: Install node and set version
-      become: yes
-      become_user: root
-      shell: "source /root/.nvm/nvm.sh && nvm install 16.15.0" 
+      become_user: "{{ current_user.stdout }}"
+      shell: |
+            source ~/.bashrc
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+            echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+            echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.bashrc
+            source ~/.bashrc
       args:
         executable: /bin/bash
+      register: nvm_status
 
-    - name: Install npm packages
-      become: yes
-      become_user: root
-      shell: "source /root/.nvm/nvm.sh && nvm exec 16 npm  install -g {{ item }}"
-      with_items:
-        - prettier
-        - yarn
-      args:
-        executable: /bin/bash
-        
-    - name: Install python packages
+    - name: Display NVM installation status
+      debug:
+        msg: "NVM installation status: {{ nvm_status.stdout }}"
+
+
+
+    - name: Install Python packages
       shell: pip3 install "{{ item }}"
       with_items:
         - black 
-        - mypy   
-        
+        - mypy
+      ignore_errors : yes
+
     - name: Install VSCode extensions
+      become_user: "{{ current_user.stdout }}"
       shell: code --install-extension "{{ item }}"
       with_items:
         - ms-python.python
@@ -103,7 +222,23 @@
         - hexmos.Lama2
         - golang.Go
         - ryanluker.vscode-coverage-gutters
-      become: no
+      ignore_errors : yes
 
+    - name: Install GVM (Go Version Manager)
+      become: yes
+      become_user: "{{ current_user.stdout }}"
+      shell: |
+            source ~/.bashrc
+            curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
+            echo 'source ~/.gvm/scripts/gvm' >> ~/.bashrc
+            source ~/.bashrc
+      args:
+        executable: /bin/bash
+      register: gvm_status
+
+
+    - name: Display GVM installation status
+      debug:
+        msg: "GVM installation status: {{ gvm_status.stdout }}"
 
 

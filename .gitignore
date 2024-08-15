@@ -1,3 +1,9 @@
 .gitlab-ci.yml
 ext.yml
-requirement.txt
+executor.build
+executor.dist
+executor.onefile-build
+executor.bin
+__pycache__
+.git
+get-docker.sh
