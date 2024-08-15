@@ -83,14 +83,17 @@
         if ! command -v brew &> /dev/null; then
           echo "Homebrew not found. Installing Homebrew."
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bash_profile
+          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          . ~/.bashrc
         else
           echo "Homebrew is already installed."
         fi
-      ignore_errors : yes
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
 
-    - name: Install rupa/z, and mcfly
+    - name: Install rupa/z and mcfly
       become: yes
       become_user: "{{ current_user.stdout }}"
       shell: |
@@ -106,7 +109,7 @@
         fi
 
         # Apply changes
-        source ~/.bashrc
+        . ~/.bashrc
       args:
         executable: /bin/bash
 
