@@ -241,4 +241,57 @@
       debug:
         msg: "GVM installation status: {{ gvm_status.stdout }}"
 
+    - name: Download Obsidian .deb package
+      get_url:
+        url: "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.6.7/obsidian_1.6.7_amd64.deb"
+        dest: "/tmp/obsidian_1.6.7_amd64.deb"
+
+    - name: Install Obsidian .deb package
+      apt:
+        deb: "/tmp/obsidian_1.6.7_amd64.deb"
+
+    - name: Ensure aliases are present in .bashrc
+      become: yes
+      become_user: "{{ current_user.stdout }}"
+      lineinfile:
+        path: ~/.bashrc
+        create: yes
+        line: "{{ item }}"
+        state: present
+      loop:
+        - 'alias yi="yarn install"'
+        - 'alias ya="yarn add"'
+        - 'alias ys="yarn start"'
+        - 'alias ni="npm install"'
+        - 'alias nif="npm install --force"'
+        - 'alias ns="npm start"'
+        - 'alias nrs="npm run start"'
+        - 'alias nrd="npm run dev"'
+        - 'alias re="rm -rf node_modules/ yarn.lock package-lock.json"'
+        - 'alias p="python3"'
+        - 'alias pi="pip install"'
+        - 'alias pmr="python3 manage.py runserver"'
+        - 'alias pos="poetry shell"'
+        - 'alias dp="docker ps"'
+        - 'alias di="docker images"'
+        - 'alias dcu="docker-compose up"'
+        - 'alias ds="docker stop"'
+        - 'alias drmi="docker rm image -f"'
+        - 'alias dsp="docker system prune -f"'
+        - 'alias dlf="docker logs -f"'
+        - 'alias n2="ssh nats02"'
+        - 'alias n3="ssh nats03"'
+        - 'alias mas="ssh master"'
+        - 'alias av3="ssh azvm03"'
+        - 'alias av2="ssh azvm02"'
+        - 'alias cc="cd"'
+        - 'alias s="sudo"'
+        - 'alias lg="lazygit"'
+        - 'alias c="clear"'
+
+    - name: Source the .bashrc file
+      shell: |
+        source ~/.bashrc
+      args:
+        executable: /bin/bash
 
