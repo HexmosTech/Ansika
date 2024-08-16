@@ -6,10 +6,24 @@
     ansible_python_interpreter: /usr/bin/python3
 
   tasks:
+    - name: Determine the user's default shell
+      shell: echo "$SHELL"
+      register: user_shell
+    
+    - name: Set CONFIG_FILE variable based on the shell
+      set_fact:
+        config_file: >
+          {% if user_shell.stdout == '/bin/bash' %}
+          ~/.bashrc
+          {% elif user_shell.stdout == '/bin/zsh' %}
+          ~/.zshrc
+          {% else %}
+          ~/.profile
+          {% endif %}
+
     - name: Update package repository
       shell: sudo apt update
       ignore_errors: yes
-
 
     - name: Install necessary tools 
       shell: sudo apt-get install -y "{{ item }}"
@@ -22,7 +36,7 @@
       shell: echo $SUDO_USER || echo $USER
       register: current_user
       changed_when: false
-    
+
     - name: Install required dependencies
       become: yes
       apt:
@@ -64,28 +78,30 @@
       become_user: "{{ current_user.stdout }}"
       shell: |
         curl https://pyenv.run | bash
-        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-        echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-        echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
-        echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-        echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-        source ~/.bashrc
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> {{ config_file }}
+        echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> {{ config_file }}
+        echo 'eval "$(pyenv init --path)"' >> {{ config_file }}
+        echo 'eval "$(pyenv init -)"' >> {{ config_file }}
+        echo 'eval "$(pyenv virtualenv-init -)"' >> {{ config_file }}
+        source {{ config_file }}
       args:
         executable: /bin/bash
       register: pyenv_status
+      ignore_errors: yes
 
     - name: Display pyenv installation status
       debug:
         msg: "pyenv installation status: {{ pyenv_status.stdout }}"
+
     - name: Install Homebrew
       become: no
       shell: |
         if ! command -v brew &> /dev/null; then
           echo "Homebrew not found. Installing Homebrew."
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> {{ config_file }}
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          . ~/.bashrc
+          . {{ config_file }}
         else
           echo "Homebrew is already installed."
         fi
@@ -99,17 +115,16 @@
       shell: |
         # Install rupa/z
         curl -fsSL https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.z.sh
-        echo 'source ~/.z.sh' >> ~/.bashrc
+        echo 'source ~/.z.sh' >> {{ config_file }}
         
         # Install mcfly
         curl -LSfs https://raw.githubusercontent.com/cantino/mcfly/master/ci/install.sh | sudo sh -s -- --git cantino/mcfly
-        echo 'eval "$(mcfly init bash)"' >> ~/.bashrc
+        echo 'eval "$(mcfly init bash)"' >> {{ config_file }}
 
         # Apply changes
-        . ~/.bashrc
+        . {{ config_file }}
       args:
         executable: /bin/bash
-
 
     - name: Install GVM dependencies
       shell: sudo apt-get install -y "{{ item }}"
@@ -137,7 +152,7 @@
       ignore_errors : yes
 
     - name: Configure apt repositories
-      shell: sudo add-apt-repository -y "{{ item  }}"
+      shell: sudo add-apt-repository -y "{{ item }}"
       with_items:
         - ppa:deadsnakes/ppa
         - ppa:phoerious/keepassxc
@@ -163,6 +178,7 @@
     - name: Update package repository
       shell: sudo apt update
       ignore_errors: yes
+      
     - name: Install Packages
       become: yes
       apt:
@@ -185,12 +201,12 @@
       become: yes
       become_user: "{{ current_user.stdout }}"
       shell: |
-            source ~/.bashrc
+            source {{ config_file }}
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-            echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
-            echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.bashrc
-            source ~/.bashrc
+            echo 'export NVM_DIR="$HOME/.nvm"' >> {{ config_file }}
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> {{ config_file }}
+            echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> {{ config_file }}
+            source {{ config_file }}
       args:
         executable: /bin/bash
       register: nvm_status
@@ -198,8 +214,6 @@
     - name: Display NVM installation status
       debug:
         msg: "NVM installation status: {{ nvm_status.stdout }}"
-
-
 
     - name: Install Python packages
       shell: pip3 install "{{ item }}"
@@ -228,14 +242,13 @@
       become: yes
       become_user: "{{ current_user.stdout }}"
       shell: |
-            source ~/.bashrc
+            source {{ config_file }}
             curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
-            echo 'source ~/.gvm/scripts/gvm' >> ~/.bashrc
-            source ~/.bashrc
+            echo 'source ~/.gvm/scripts/gvm' >> {{ config_file }}
+            source {{ config_file }}
       args:
         executable: /bin/bash
       register: gvm_status
-
 
     - name: Display GVM installation status
       debug:
@@ -250,7 +263,7 @@
       apt:
         deb: "/tmp/obsidian_1.6.7_amd64.deb"
 
-    - name: Ensure aliases are present in .bashrc
+    - name: Ensure aliases are present in shell configuration
       become: yes
       become_user: "{{ current_user.stdout }}"
       lineinfile:
@@ -289,9 +302,8 @@
         - 'alias lg="lazygit"'
         - 'alias c="clear"'
 
-    - name: Source the .bashrc file
+    - name: Source the shell configuration file
       shell: |
-        source ~/.bashrc
+        source {{ config_file }}
       args:
         executable: /bin/bash
-
