@@ -297,7 +297,6 @@
         - 'alias mas="ssh master"'
         - 'alias av3="ssh azvm03"'
         - 'alias av2="ssh azvm02"'
-        - 'alias cc="cd"'
         - 'alias s="sudo"'
         - 'alias lg="lazygit"'
         - 'alias c="clear"'
