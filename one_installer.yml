@@ -254,14 +254,21 @@
       debug:
         msg: "GVM installation status: {{ gvm_status.stdout }}"
 
-    - name: Download Obsidian .deb package
-      get_url:
-        url: "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.6.7/obsidian_1.6.7_amd64.deb"
-        dest: "/tmp/obsidian_1.6.7_amd64.deb"
+    - name: Fetch the latest Obsidian .deb package URL
+      shell: |
+        curl -s https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest |
+        grep "browser_download_url.*.deb" |
+        cut -d '"' -f 4
+      register: obsidian_deb_url
 
-    - name: Install Obsidian .deb package
+    - name: Download the latest Obsidian .deb package
+      get_url:
+        url: "{{ obsidian_deb_url.stdout }}"
+        dest: "/tmp/obsidian_latest_amd64.deb"
+
+    - name: Install the latest Obsidian .deb package
       apt:
-        deb: "/tmp/obsidian_1.6.7_amd64.deb"
+        deb: "/tmp/obsidian_latest_amd64.deb"
 
     - name: Ensure aliases are present in shell configuration
       become: yes
