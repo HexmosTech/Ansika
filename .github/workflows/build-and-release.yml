@@ -28,7 +28,7 @@ jobs:
           docker cp ansika:/code/executor.bin /tmp/executor.bin 
 
       - name: Store artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: executor.bin
           path: /tmp/executor.bin 
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact from Build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: executor.bin
           path: /tmp
