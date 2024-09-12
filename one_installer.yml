@@ -56,17 +56,40 @@
         update_cache: yes
       ignore_errors: yes
 
+    - name: Download Docker installation script
+      get_url:
+        url: https://get.docker.com
+        dest: /tmp/install-docker.sh
 
-    - name: Install Podman and podman-docker
-      become: yes
-      become_user: "{{ current_user.stdout }}"
-      shell: |
-        sudo apt-get update
-        sudo apt-get install -y podman
-        sudo apt-get install -y podman-docker
+    - name: Verify Docker installation script content
+      shell: cat /tmp/install-docker.sh
+      register: script_content
+
+    - name: Display Docker installation script content
+      debug:
+        msg: "{{ script_content.stdout }}"
+
+    - name: Run Docker installation script with --dry-run
+      shell: sh /tmp/install-docker.sh --dry-run
+      register: dry_run_output
+      ignore_errors: yes
+
+    - name: Display Docker installation dry-run output
+      debug:
+        msg: "{{ dry_run_output.stdout }}"
+
+    - name: Run Docker installation script
+      shell: sudo sh /tmp/install-docker.sh
       args:
         executable: /bin/bash
-      register: podman_status
+
+    - name: Verify Docker installation
+      shell: docker --version
+      register: docker_version
+
+    - name: Display Docker version
+      debug:
+        msg: "Docker version: {{ docker_version.stdout }}"
 
     - name: Install Git
       package:
