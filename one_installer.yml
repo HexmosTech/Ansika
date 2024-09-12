@@ -57,6 +57,8 @@
       ignore_errors: yes
 
     - name: Download Docker installation script
+      become: yes
+      become_user: "{{ current_user.stdout }}"
       get_url:
         url: https://get.docker.com
         dest: /tmp/install-docker.sh
@@ -70,6 +72,8 @@
         msg: "{{ script_content.stdout }}"
 
     - name: Run Docker installation script with --dry-run
+      become: yes
+      become_user: "{{ current_user.stdout }}"
       shell: sh /tmp/install-docker.sh --dry-run
       register: dry_run_output
       ignore_errors: yes
@@ -79,9 +83,20 @@
         msg: "{{ dry_run_output.stdout }}"
 
     - name: Run Docker installation script
+      become: yes
+      become_user: "{{ current_user.stdout }}"
       shell: sudo sh /tmp/install-docker.sh
       args:
         executable: /bin/bash
+
+
+    - name: Create docker group
+      command: groupadd docker
+      ignore_errors: yes  
+
+    - name: Add current user to the docker group
+      command: usermod -aG docker {{ current_user.stdout }}
+
 
     - name: Verify Docker installation
       shell: docker --version
