@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact from Build job
-        uses: actions/download-artifact@v3.1.0  # Updated version
+        uses: actions/download-artifact@v3.1.0 
         with:
           name: executor.bin
           path: /tmp
