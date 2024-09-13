@@ -41,18 +41,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact from Build job
-        uses: actions/download-artifact@v3.1.0 
+        uses: actions/download-artifact@v3
         with:
           name: executor.bin
           path: /tmp
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v3 
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}  
+          tag_name: ${{ github.ref_name }}  # Use only the tag name
           release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
