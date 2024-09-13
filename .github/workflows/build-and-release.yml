@@ -1,20 +1,23 @@
 name: Binary Build And Release
-run-name: ${{ github.actor }} building the binary using nuitka 🚀
+run-name: ${{ github.actor }} building the binary using Nuitka 🚀
 on:
   push:
     tags:
-    - '*'
-  workflow_dispatch:
+      - '*'  # Triggers on any tag
+  workflow_dispatch:  # Allows manual trigger
 
+permissions:
+  contents: write  # Ensure the token can create releases
 
 jobs:
   Binary-Build:
-    name: Build binary using nuitka
+    name: Build binary using Nuitka
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      
       - name: Check out repository code
         uses: actions/checkout@v2
 
@@ -38,19 +41,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact from Build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v3.1.0  # Updated version
         with:
           name: executor.bin
           path: /tmp
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v3 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}  
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
 
